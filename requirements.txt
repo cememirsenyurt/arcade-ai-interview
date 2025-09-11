@@ -1,0 +1,10 @@
+# --- Core runtime ---
+openai>=1.30.0
+python-dotenv>=1.0.0
+pillow>=10.3.0
+rich>=13.7.0
+
+# --- Dev / linting / typing ---
+black>=24.4.2          # code formatting
+flake8>=7.1.0          # linting
+mypy>=1.10.0           # static typing
