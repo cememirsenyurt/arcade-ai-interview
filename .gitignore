@@ -7,7 +7,6 @@ venv/
 # Secrets & caches
 .env
 .cache/
-out/
 
 # OS/editor
 .DS_Store
