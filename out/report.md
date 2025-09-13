@@ -1,14 +1,12 @@
-SUMMARY: This flow guides users on how to search for a Razor scooter on Target.com, select a preferred model, and add it to the cart for checkout. It includes steps for browsing, customizing, and reviewing the cart.
+TITLE: Open a Chase Checking Account
+
+SUMMARY: This flow guides users through the process of applying for a Chase Total Checking account online. By following the steps, users can easily navigate to the application page and complete their account setup.
 
 STEPS:
-- Open Target.com
-- Click the search bar
-- Type "scooter" and search
-- Click the Razor A5 Lux 2 Wheel Kick Scooter image
-- Choose your preferred color
-- Click Add to cart
-- View your cart
-- Proceed to checkout
+1. User clicks "Get Started" on the introductory chapter to begin the application process.
+2. User views an image of the Chase homepage and is prompted to search for checking account options.
+3. User views an image of the checking account options and is guided to choose the Total Checking account.
+4. User views an image of the Total Checking account details and is instructed to click "Open now" to start the application.
+5. User reaches the final chapter where they can click "Apply now" to access the secure application page.
 
-TITLE: Add a Scooter to Your Cart on Target.com
-TAGS: shopping,target,scooter
+TAGS: Chase, checking account, online application, banking, user guide

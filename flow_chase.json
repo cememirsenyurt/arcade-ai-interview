@@ -1,0 +1,137 @@
+{
+  "createdBy": "example-user",
+  "schemaVersion": "1.1.0",
+  "optimizeFlowForMobileView": true,
+  "font": "Inter",
+  "showCaptions": true,
+  "showStartOverlay": false,
+  "showBackNextButtons": false,
+  "autoplay": { "enabled": false, "delay": null },
+  "useCase": "promotional",
+  "name": "Open a Chase Checking Account",
+  "steps": [
+    {
+      "type": "CHAPTER",
+      "id": "chapter-start",
+      "title": "Open a Chase Checking Account",
+      "subtitle": "See how to start your Chase Total Checking application online.",
+      "theme": "light",
+      "textAlign": "left",
+      "showPreviewImage": true,
+      "showLogo": false,
+      "paths": [
+        {
+          "id": "path-start",
+          "buttonText": "Get Started",
+          "buttonColor": "#0c3c91",
+          "buttonTextColor": "#ffffff",
+          "pathType": "step"
+        }
+      ]
+    },
+    {
+      "id": "step-home",
+      "type": "IMAGE",
+      "url": "https://example.com/image/home.png",
+      "originalImageUrl": "https://example.com/image/home.png",
+      "hasHTML": true,
+      "size": { "height": 1668, "width": 3418 },
+      "hotspots": [
+        {
+          "id": "hs-search",
+          "width": 40,
+          "height": 40,
+          "label": "Search checking to view account options.",
+          "style": "pulsating",
+          "defaultOpen": true,
+          "textColor": "#ffffff",
+          "bgColor": "#0c3c91",
+          "x": 0.62,
+          "y": 0.09
+        }
+      ],
+      "pageContext": {
+        "url": "https://www.chase.com/",
+        "title": "Chase – Credit Card, Mortgage, Banking, Auto",
+        "width": 1709,
+        "height": 834,
+        "language": "en-US"
+      }
+    },
+    {
+      "id": "step-checking",
+      "type": "IMAGE",
+      "url": "https://example.com/image/checking.png",
+      "originalImageUrl": "https://example.com/image/checking.png",
+      "hasHTML": true,
+      "size": { "height": 1668, "width": 3418 },
+      "hotspots": [
+        {
+          "id": "hs-choose",
+          "width": 40,
+          "height": 40,
+          "label": "Choose Total Checking to continue.",
+          "style": "pulsating",
+          "defaultOpen": true,
+          "textColor": "#ffffff",
+          "bgColor": "#0c3c91",
+          "x": 0.45,
+          "y": 0.33
+        }
+      ],
+      "pageContext": {
+        "url": "https://www.chase.com/personal/checking",
+        "title": "Checking Account | Chase Bank",
+        "width": 1709,
+        "height": 834,
+        "language": "en-US"
+      }
+    },
+    {
+      "id": "step-total-checking",
+      "type": "IMAGE",
+      "url": "https://example.com/image/total-checking.png",
+      "originalImageUrl": "https://example.com/image/total-checking.png",
+      "hasHTML": true,
+      "size": { "height": 1668, "width": 3418 },
+      "hotspots": [
+        {
+          "id": "hs-open",
+          "width": 40,
+          "height": 40,
+          "label": "Click Open now to start your application.",
+          "style": "pulsating",
+          "defaultOpen": true,
+          "textColor": "#ffffff",
+          "bgColor": "#0c3c91",
+          "x": 0.68,
+          "y": 0.74
+        }
+      ],
+      "pageContext": {
+        "url": "https://www.chase.com/personal/checking/total-checking",
+        "title": "Chase Total Checking | Open Account",
+        "width": 1709,
+        "height": 834,
+        "language": "en-US"
+      }
+    },
+    {
+      "type": "CHAPTER",
+      "id": "chapter-end",
+      "title": "You're ready to apply",
+      "subtitle": "Start your secure Chase application.",
+      "theme": "light",
+      "paths": [
+        {
+          "id": "path-cta",
+          "buttonText": "Apply now",
+          "buttonColor": "#0c3c91",
+          "buttonTextColor": "#ffffff",
+          "url": "https://www.chase.com/personal/checking/total-checking",
+          "pathType": "url"
+        }
+      ]
+    }
+  ]
+}

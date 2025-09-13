@@ -1,23 +1,22 @@
-from PIL import Image, ImageDraw, ImageFont
+# Thin wrapper around card helpers to render a share image
+from __future__ import annotations
+
+from typing import Any, Dict, Optional, List
 import json
 
-# -----------------------------------------------------------------------------
-# Helpers
-# -----------------------------------------------------------------------------
+from PIL import Image, ImageDraw  # type: ignore
 
-def _measure(draw, text, font):
-    """Return text width/height using Pillow 10+ compatible API.
-    (Identical behavior to previous implementation.)"""
-    bbox = draw.textbbox((0, 0), text, font=font)
-    return bbox[2] - bbox[0], bbox[3] - bbox[1]
+from src.card.canvas import CANVAS
+from src.card.text import fit_text, measure
+from src.card.bullets import layout_bullets, draw_bullets
+from src.card.color import contrast, rel_luminance, is_neutral_rgb
+from src.card.style import derive_style_from_flow
+from src.card.types import Style
+
+__all__ = ["compose", "derive_style_from_flow"]
 
 
-def _as_brief_dict(brief):
-    """Normalize the brief into a dict.
-    - If it's a JSON string, try to parse it.
-    - On failure, return the same default structure as before.
-    - If it's already a dict, just return it.
-    (Outcome is identical to the previous logic.)"""
+def _as_brief_dict(brief: Any) -> Dict[str, Any]:
     if isinstance(brief, str):
         try:
             return json.loads(brief)
@@ -26,51 +25,75 @@ def _as_brief_dict(brief):
     return brief
 
 
-# -----------------------------------------------------------------------------
-# Composer
-# -----------------------------------------------------------------------------
+def _style_from_dict(style: Optional[Dict[str, Any]], flow: Optional[Dict[str, Any]]) -> Style:
+    st = style or derive_style_from_flow(flow)
+    return Style(
+        primary=tuple(st.get("primary", (33, 66, 231))),
+        bg=tuple(st.get("bg", (24, 24, 36))),
+        fg=tuple(st.get("fg", (255, 255, 255))),
+        font=st.get("font"),
+        align=st.get("align", "center"),
+    )
 
-def compose(brief, path):
-    """Render a 1200x630 share card image from the given brief.
 
-    Expected brief dict format:
-    {
-      "overlay": "<title text>",
-      "elements": ["bullet 1", "bullet 2", ...]
-    }
+def compose(brief: Any, path: Any, flow: Optional[Dict[str, Any]] = None, style: Optional[Dict[str, Any]] = None) -> None:
+    # Normalize input and resolve style
+    b = _as_brief_dict(brief)
+    st = _style_from_dict(style, flow)
 
-    This function keeps the same layout and defaults as before.
-    """
-    # Normalize input (dict or JSON string).
-    brief = _as_brief_dict(brief)
+    W, H = CANVAS.width, CANVAS.height
+    bg, fg, primary = st.bg, st.fg, st.primary
 
-    # Canvas constants (unchanged)
-    W, H = 1200, 630
-    bg = (24, 24, 36)     # background color
-    fg = (255, 255, 255)  # foreground (text) color
+    # Promote strong primary as bg when contrast allows
+    white, black = (255, 255, 255), (0, 0, 0)
+    if is_neutral_rgb(bg) and not is_neutral_rgb(primary):
+        cw = contrast(primary, white)
+        cb = contrast(primary, black)
+        if max(cw, cb) >= 4.5:
+            bg = primary
+            fg = white if cw >= cb else black
 
-    # Create canvas
+    # Ensure readable contrast on dark backgrounds
+    if rel_luminance(bg) < 0.2:
+        fg = (255, 255, 255)
+
+    # Canvas
     img = Image.new("RGB", (W, H), bg)
     d = ImageDraw.Draw(img)
 
-    # Fonts (unchanged logic: try Arial, else default)
-    try:
-        title_font = ImageFont.truetype("Arial.ttf", 60)
-        item_font  = ImageFont.truetype("Arial.ttf", 36)
-    except Exception:
-        title_font = ImageFont.load_default()
-        item_font  = ImageFont.load_default()
+    # Layout
+    pad_x, pad_top = CANVAS.pad_x, CANVAS.pad_top
+    content_width = W - pad_x * 2
+    align = (st.align or "left").lower()
 
-    # Title / overlay (same positioning)
-    overlay = str(brief.get("overlay", "Arcade Flow")).strip()
-    tw, th = _measure(d, overlay, title_font)
-    d.text(((W - tw) / 2, 80), overlay, fill=fg, font=title_font)
+    # Title
+    overlay = str(b.get("overlay", "Arcade Flow")).strip()
+    title_font, title_lines = fit_text(d, overlay, content_width, 2, 80, 40, st.font)
 
-    # Bulleted elements (same start Y and spacing; limit to 5)
-    y = 200
-    for e in brief.get("elements", [])[:5]:
-        d.text((200, y), f"• {e}", fill=fg, font=item_font)
-        y += 60
+    def aligned_x(tw: int) -> float:
+        if align == "left":
+            return float(pad_x)
+        if align == "right":
+            return float(W - pad_x - tw)
+        return float((W - tw) / 2)
 
-    # Save output (unchanged)
-    img.save(path, "PNG")
+    y = pad_top
+    for line in title_lines:
+        tw, th = measure(d, line, title_font)
+        d.text((aligned_x(tw), y), line, fill=fg, font=title_font)
+        y += th + 8
+
+    y += CANVAS.pad_between
+
+    # Bullets
+    bullets = [str(e).strip() for e in (b.get("elements") or []) if str(e).strip()][:5]
+    if not bullets:
+        bullets = ["Step 1", "Step 2", "Step 3"]
+
+    body_max_height = H - y - pad_top
+    body_font, wrapped = layout_bullets(d, bullets, st.font, content_width, body_max_height, 40, 24)
+
+    draw_bullets(d, y, wrapped, body_font, fg, content_x=pad_x)
+
+    # Save
+    img.save(path.__fspath__() if hasattr(path, "__fspath__") else path, "PNG")
